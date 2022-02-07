@@ -25,7 +25,7 @@ class Product:
         return f"{self.__class__.__name__}({self.name},{self.price},{self.rate},{self.cat_id})"
 
     @staticmethod
-    def _check_type(_object: Any, _type: type):
+    def _check_type(_object: Any, _type: type) -> Any:
         if not isinstance(_object, _type):
             raise TypeError(f"Ожидается {_type}, получено {type(_object)}")
 
@@ -85,13 +85,13 @@ class Category:
         items_string = '\t'
         for item in self.product_array:
             items_string += str(item) + '\n\t'
-        return f"в категории {self.name} следующие товары: \n{items_string}"
+        return f"Товары в категории {self.name}: \n{items_string}"
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.name},{self.product_array})"
 
     @property
-    def id(self):
+    def id(self) -> int:
         return self._cat_id
 
     @property
@@ -108,7 +108,7 @@ class Category:
         return self._product_array
 
     @product_array.setter
-    def product_array(self, *args: Product):
+    def product_array(self, *args: Product) -> None:
         """
         установка значений товаров из категории
         :param product: объект типа Product или list[Product]
@@ -143,10 +143,10 @@ class Basket:
     def order_array(self) -> list[Product]:
         return self._order_array
 
-    def add_to_cart(self, product: Product):
+    def add_to_cart(self, product: Product) -> None:
         """
         установка значений товаров из категории
-        :param product: объект типа Product или list[Product]
+        :param product: объект типа Product
         """
         Product._check_type(product, Product)
         self._order_array.append(product)
@@ -154,12 +154,12 @@ class Basket:
 
 class User:
     """
-    Класс для описания покупателя
-        :param login: Логин
-        :param password: пароль
-        :param user_basket: корзина пользователя
+    Класс "Покупатель"
+        :param login: Логин пользователя
+        :param password: Пароль пользователя
+        :param user_basket: Корзина пользователя
     """
-    DEFAULT_PASS = b'123456789'
+    DEFAULT_PASS = b'123456789'     # пароль по умолчанию
 
     def __init__(self, login: str, password: Any = None, user_basket: Basket = None):
         self.login = login
@@ -195,7 +195,7 @@ class User:
         return self._basket
 
     @basket.setter
-    def basket(self, basket: Basket = None):
+    def basket(self, basket: Basket = None) -> None:
         if basket:
             self._basket = basket
         else:
@@ -207,7 +207,6 @@ class Shop:
     Основной класс интернет-магазина
     """
     def __init__(self):
-        # иные объекты
         self._user = []             # список пользователей магазина
         self._product_list = []     # список товаров в магазине
         self._categories = []       # список категорий товаров и магазине
@@ -217,7 +216,7 @@ class Shop:
         return f"{self.__class__.__name__}({self.shop_name})"
 
     def user(self) -> list[User]:
-        """ Cписок пользователей"""
+        """ Список пользователей"""
         return self._user
 
     def add_user(self, new_user: User = None) -> None:
@@ -225,6 +224,7 @@ class Shop:
         Добавление пользователя в интернет-магазин
         :param new_user: добавляемый пользователь
         """
+        print("Регистрация нового пользователя")
         if new_user:
             Product._check_type(new_user, User)
         else:
@@ -236,7 +236,7 @@ class Shop:
     def _input_user_data(self, print_string: str) -> str:
         """
         Ввод данных пользователя
-        :return: введенная строка
+        :return: Возвращает введенную строку
         """
         return str(input(f"Введите {print_string}: "))
 
@@ -252,7 +252,8 @@ class Shop:
         return None
 
     def authentication(self) -> None:
-        """Аутентификация пользователя в магазине"""
+        """Авторизация пользователя в магазине"""
+        print("Авторизация пользователя")
         user = self._search_user(self._input_user_data('имя пользователя (логин)'))
         if not user:
             raise ValueError('пользователя с таким именем не существует')
@@ -266,7 +267,7 @@ class Shop:
         return self._current_user
 
     @cur_user.setter
-    def cur_user(self, user: User = None):
+    def cur_user(self, user: User = None) -> None:
         """Установка текущего пользователя"""
         if not user:
             self._current_user = User(self.DEFAULT_USER_NAME)
@@ -274,33 +275,14 @@ class Shop:
             Product._check_type(user, User)
             self._current_user = user
 
-    def add_product(self, new_product: Product = None) -> None:
-        """
-        Добавление нового товара в магазин
-        :param new_product: объект Product или None
-        """
-        if new_product and isinstance(new_product, Product):
-            self._product_list.append(new_product)
-        else:
-            name = self._input_user_data('название добавляемого товара')
-            price = self._input_user_data('цену товара')
-            rate = self._input_user_data('рейтинг товара')
-            rate = float(rate) if rate.isdigit() else 1
-            self._product_list.append(Product(name, price, rate))
-
-    def add_products(self, *args) -> None:
-        """Добавление нескольких товаров"""
-        for item in args:
-            self.add_product(item)
-
     def print_product_list(self) -> str:
         """Возвращает "строку" с перечнем товаров в магазине"""
         result = ' '
         for item in self._product_list:
-           result += (f'\t{item}\n')
+            result += f'\t{item}\n'
         return result
 
-    def _add_category_to_list(self, new_cat: Category) -> None:
+    def _add_category_to_list(self, new_cat: Category) -> [Category, None]:
         """Добавление категории в список категорий"""
         Product._check_type(new_cat, Category)
         self._categories.append(new_cat)
@@ -310,7 +292,7 @@ class Shop:
         for cat in args:
             self._add_category_to_list(cat)
 
-    def create_new_category(self):
+    def create_new_category(self) -> None:
         """создание новой категории"""
         name = self._input_user_data('название категории')
         self._add_category_to_list(Category(name))
@@ -372,7 +354,7 @@ class Shop:
         self.cur_user.basket.add_to_cart(product)
         print(Basket(product))
 
-    def check_order(self):
+    def check_order(self) -> str:
         """Вычисление суммы заказа"""
         total_cost = 0
         for item in self.cur_user.basket.order_array:
@@ -381,12 +363,9 @@ class Shop:
 
 
 if __name__ == '__main__':
-    shop = Shop()  # создаем магазин
-    print("Создание нового пользователя")
-    shop.add_user()  # создаем пользователя
-    print("Авторизация пользователя")
+    shop = Shop()
+    shop.add_user()
     shop.authentication()
-
     # добавляем новую категорию
     shop._add_categories_to_list(Category('Молочная продукция'), Category('Хлебобулочные изделия'))
     # создаем новую категорию
@@ -394,32 +373,18 @@ if __name__ == '__main__':
     # добавляем товары в категории
     shop.add_products_to_category(Product('Кефир', 40, 4.0), Product('Молоко', 35, 5.0), Product('Ряженка', 50, 5.0), id=1)
     shop.add_products_to_category(Product("Хлеб", 34.0, 4.3), Product("Печенье", 75.0, 4.9), Product("Бисквит", 60.0, 5.0), id=2)
-    shop.add_products_to_category(Product("Яблоки", 66.0, 4.8), Product("Картофель", 50.0, 4.9), Product("Огурцы", 77.0, 5.0), id=3)
+    shop.add_products_to_category(Product("Помидоры", 66.0, 4.8), Product("Картофель", 50.0, 4.9), Product("Огурцы", 77.0, 5.0), id=3)
     # вывод товаров с категориями
     print(shop.print_category_with_products())
     # добавляем товары в корзину
     shop.add_to_cart(Product('Кефир', 100, 4.0))
     shop.add_to_cart(Product('Молоко', 35, 5.0))
-    # оформляем покупку через вывод общей суммы покупки
+    # вывод общей суммы покупки
     shop.check_order()
     shop.print_product_list()
     shop.add_user()
     shop.authentication()
     shop.user()
-    #print(user1)
-    #user1.authentication()
-    #bread = Product("Хлеб", 34.0, 4.3)
-    #buscuit = Product("Бисквит", 60.0, 5.0)
-    #cookies = Product("Печенье", 75.0, 4.9)
-    #milk = Product("Молоко", 70.0, 4.3)
-    #kefir = Product("Кефир", 86.0, 4.2)
-    #curd = Product("Творог", 75.0, 5.0)
-    #bakery = [bread, buscuit, cookies]
-    #dairy = [milk, kefir, curd]
-    #bakery = Category("Хлебобулочные изделия", bakery)
-    #dairy = Category("Молочные изделия", dairy)
-    #print(bakery)
-    #print(dairy)
-    #Category.print_categories()
-    #Product.print_products()
+    shop.add_to_cart(Product("Огурцы", 77.0, 5.0))
+    shop.check_order()
 
