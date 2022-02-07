@@ -134,7 +134,7 @@ class Basket:
         items_string = '\t'
         for item in self.order_array:
             items_string += str(item) + '\n\t'
-        return f"в корзине следующие товары: \n{items_string}" if self.order_array else "корзина пуста"
+        return f"Товар в корзине: \n{items_string}" if self.order_array else "корзина пуста"
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self._order_array[0]})" if self._order_array else f"{self.__class__.__name__}(None)"
@@ -159,17 +159,17 @@ class User:
         :param password: Пароль пользователя
         :param user_basket: Корзина пользователя
     """
-    DEFAULT_PASS = b'123456789'     # пароль по умолчанию
+    default_pass = '123456789'   # пароль по умолчанию
 
     def __init__(self, login: str, password: Any = None, user_basket: Basket = None):
         self.login = login
         self.password = password
         self.basket = user_basket
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Пользователь {self.login}, {str(self.basket)}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         pass_str = self.password if self.password else None
         basket_str = self.basket if self.basket else None
         return f"{self.__class__.__name__}({self.login}, {pass_str}, {basket_str})"
@@ -188,7 +188,7 @@ class User:
             self._password = new_pass
         else:
             print("Установлен пароль по умолчанию")
-            self._password = self.DEFAULT_PASS
+            self._password = self.default_pass
 
     @property
     def basket(self) -> Basket:
@@ -211,9 +211,6 @@ class Shop:
         self._product_list = []     # список товаров в магазине
         self._categories = []       # список категорий товаров и магазине
         self._current_user = None        # текущий пользователь
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}({self.shop_name})"
 
     def user(self) -> list[User]:
         """ Список пользователей"""
@@ -269,11 +266,8 @@ class Shop:
     @cur_user.setter
     def cur_user(self, user: User = None) -> None:
         """Установка текущего пользователя"""
-        if not user:
-            self._current_user = User(self.DEFAULT_USER_NAME)
-        else:
-            Product._check_type(user, User)
-            self._current_user = user
+        Product._check_type(user, User)
+        self._current_user = user
 
     def print_product_list(self) -> str:
         """Возвращает "строку" с перечнем товаров в магазине"""
@@ -367,13 +361,16 @@ if __name__ == '__main__':
     shop.add_user()
     shop.authentication()
     # добавляем новую категорию
-    shop._add_categories_to_list(Category('Молочная продукция'), Category('Хлебобулочные изделия'))
+    shop._add_categories_to_list(Category('Молочная продукция'), Category('Хлебобулочные изделия'), Category('Овощи'))
     # создаем новую категорию
-    shop.create_new_category()
+    # shop.create_new_category()
     # добавляем товары в категории
-    shop.add_products_to_category(Product('Кефир', 40, 4.0), Product('Молоко', 35, 5.0), Product('Ряженка', 50, 5.0), id=1)
-    shop.add_products_to_category(Product("Хлеб", 34.0, 4.3), Product("Печенье", 75.0, 4.9), Product("Бисквит", 60.0, 5.0), id=2)
-    shop.add_products_to_category(Product("Помидоры", 66.0, 4.8), Product("Картофель", 50.0, 4.9), Product("Огурцы", 77.0, 5.0), id=3)
+    shop.add_products_to_category(Product('Кефир', 40, 4.0),
+                                  Product('Молоко', 35, 5.0), Product('Ряженка', 50, 5.0), id=1)
+    shop.add_products_to_category(Product("Хлеб", 34.0, 4.3),
+                                  Product("Печенье", 75.0, 4.9), Product("Бисквит", 60.0, 5.0), id=2)
+    shop.add_products_to_category(Product("Помидоры", 66.0, 4.8), Product("Картофель", 50.0, 4.9),
+                                  Product("Огурцы", 77.0, 5.0), id=3)
     # вывод товаров с категориями
     print(shop.print_category_with_products())
     # добавляем товары в корзину
@@ -387,4 +384,6 @@ if __name__ == '__main__':
     shop.user()
     shop.add_to_cart(Product("Огурцы", 77.0, 5.0))
     shop.check_order()
+
+
 
