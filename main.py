@@ -159,7 +159,7 @@ class User:
         :param password: Пароль пользователя
         :param user_basket: Корзина пользователя
     """
-    default_pass = '123456789'   # пароль по умолчанию
+    default_pass = '12345'   # пароль по умолчанию
 
     def __init__(self, login: str, password: Any = None, user_basket: Basket = None):
         self.login = login
@@ -367,23 +367,25 @@ if __name__ == '__main__':
     # добавляем товары в категории
     shop.add_products_to_category(Product('Кефир', 40, 4.0),
                                   Product('Молоко', 35, 5.0), Product('Ряженка', 50, 5.0), id=1)
-    shop.add_products_to_category(Product("Хлеб", 34.0, 4.3),
-                                  Product("Печенье", 75.0, 4.9), Product("Бисквит", 60.0, 5.0), id=2)
-    shop.add_products_to_category(Product("Помидоры", 66.0, 4.8), Product("Картофель", 50.0, 4.9),
-                                  Product("Огурцы", 77.0, 5.0), id=3)
+    shop.add_products_to_category(Product("Хлеб", 34, 4.3),
+                                  Product("Печенье", 75, 4.9), Product("Бисквит", 60, 5.0), id=2)
+    shop.add_products_to_category(Product("Помидоры", 66, 4.8), Product("Картофель", 50, 4.9),
+                                  Product("Огурцы", 77, 5.0), id=3)
     # вывод товаров с категориями
     print(shop.print_category_with_products())
     # добавляем товары в корзину
     shop.add_to_cart(Product('Кефир', 100, 4.0))
     shop.add_to_cart(Product('Молоко', 35, 5.0))
     # вывод общей суммы покупки
-    shop.check_order()
+    shop.check_order()    # создадим еще одного юзера
     shop.print_product_list()
     shop.add_user()
     shop.authentication()
     shop.user()
     shop.add_to_cart(Product("Огурцы", 77.0, 5.0))
+    shop.add_to_cart(Product("Помидоры", 66.0, 4.8))
     shop.check_order()
+
 
 
 
